@@ -9,36 +9,40 @@ import subprocess  # For executing a shell command
 import constants
 import util
 
+LOG = None
 
 def main():
     # 0) Parsing command line and configuration file
-    description_text = "This app sends HTTP requests"
-    args_dict = util.parse_config_file(constants.SIMULATOR_APP_NAME, description_text)
+    args_dict = util.parse_config_file(constants.APP_NAME, constants.DESCRIPTION_TEXT)
 
     # 1) Logging initialization
     try:
         if args_dict[constants.VERBOSE_KEY]:
             logging_level = logging.DEBUG
-            verbose = True
         else:
             logging_level = logging.INFO
-            verbose = False
     except KeyError:
         logging_level = logging.INFO
 
-    util.init_logger(logging_level)
-    logging.debug("Verbose mode enabled")  # Printed only if logging_level is DEBUG
+    global LOG
+    LOG = util.init_logger(constants.APP_NAME, logging_level)
+    LOG.debug("Verbose mode enabled")  # Printed only if logging_level is DEBUG
 
     # 2) Retrieving necessary values
     addresses = args_dict[constants.CONNECTING_ADDRESSES_KEY]
-    logging.debug(f"Connecting to {len(addresses)} urls")
+    LOG.debug(f"Connecting to {len(addresses)} urls")
     counter = 0
     for a in addresses:
         counter += 1
-        logging.debug(f"{counter}. {a}")
+        LOG.debug(f"{counter}. {a}")
     time.sleep(1)
 
-    # 3) Sending requests
+    # 3 opt) if available exposing MUD URL
+    if constants.MUD_URL_KEY in args_dict:
+        LOG.debug("MUD URL to expose: <%s>", args_dict[constants.MUD_URL_KEY])
+        expose_mud_url(args_dict[constants.MUD_URL_KEY], "Ethernet 2")
+
+    # 4) Sending requests
     execute_requests(addresses, args_dict[constants.TIME_AMONG_REQUESTS_KEY], args_dict[constants.DOWNLOAD_KEY])
 
     # Sending requests forever if required
@@ -52,14 +56,14 @@ def main():
 def execute_requests(addresses, waiting_time, download=False):
     for address in addresses:
         isOk = ping(address)
-        # logging.info(f"The ping is: {isOk}")
+        # LOG.info(f"The ping is: {isOk}")
         # if args_dict[constants.TRACEROUT_KEY]:
         #    traceroute(address)
         if download:
             filename = os.path.basename(address)
             isOk = curl(address, filename)
             if isOk:
-                logging.debug(f"File {filename} was succesfully downloaded")
+                LOG.debug(f"File {filename} was succesfully downloaded")
         time.sleep(waiting_time)
 
 

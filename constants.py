@@ -15,12 +15,11 @@ TRACEROUT_KEY = "traceroute"
 DOWNLOAD_KEY = "download"
 INFINITE_REQUESTS_KEY = "infinite_requests"
 
-
-
 # log
 DEFAULT_LOG_FORMATTER = "%(asctime)s.%(msecs)04d %(name)-7s %(levelname)s: %(message)s"
+RFC3339_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
+APP_NAME = "Fake-HTTP-Device"
+DESCRIPTION_TEXT = "This app sends HTTP requests"
 
 # Other
 NO_VALUE = "-----"
-RFC3339_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
-SIMULATOR_APP_NAME = "HTTP requests"

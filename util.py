@@ -18,13 +18,19 @@ def simple_end_signal_handler(signal, frame):
     sys.exit(0)
 
 
-def init_logger(debug_level: Union[int, str]):
+def init_logger(log_name: str, debug_level: Union[int, str]):
     """ This function configure the logger according to the specified debug_level taken from logging class. """
+    # logging.basicConfig(format="%(message)s")
 
-    logging.basicConfig(format="%(message)s")
-    logging.getLogger().setLevel(level=debug_level)
-    logging.getLogger().handlers[0].setFormatter(
-        logging.Formatter(constants.DEFAULT_LOG_FORMATTER, datefmt="(%b-%d) %H:%M:%S"))
+    logger = logging.getLogger(log_name)
+    logger.setLevel(level=debug_level)
+    
+    formatter = logging.Formatter(constants.DEFAULT_LOG_FORMATTER, datefmt="(%b-%d) %H:%M:%S")
+    streamHandler = logging.StreamHandler()
+    streamHandler.setFormatter(formatter)
+    logger.addHandler(streamHandler)
+    
+    return logger
 
 
 def parse_json_file(filename: str) -> dict:

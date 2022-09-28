@@ -12,6 +12,5 @@
   "infinite_requests": false,
   "traceroute": false,
   "download": false,
-  "verbose": true,
-  "expose_mud_url": false
+  "verbose": true
 }
