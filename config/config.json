@@ -1,4 +1,5 @@
 {
+  "interface_to_use": "wlan0",
   "connecting_addresses": [
     "google.com", "amazon.com", "apple.com"
   ],
