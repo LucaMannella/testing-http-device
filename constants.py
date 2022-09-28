@@ -14,6 +14,7 @@ VERBOSE_KEY = "verbose"
 TRACEROUT_KEY = "traceroute"
 DOWNLOAD_KEY = "download"
 INFINITE_REQUESTS_KEY = "infinite_requests"
+MUD_URL_KEY = "mud_url"
 
 # log
 DEFAULT_LOG_FORMATTER = "%(asctime)s.%(msecs)04d %(name)-7s %(levelname)s: %(message)s"

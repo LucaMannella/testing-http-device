@@ -64,3 +64,7 @@ def parse_config_file(app_name: str, description: str) -> dict:
     config_file = cmd_line.config
     args_dict = parse_json_file(config_file)
     return args_dict
+
+def mac_to_bytes(mac_addr: str) -> bytes:
+    """ Converts a MAC address string to bytes. """
+    return int(mac_addr.replace(":", ""), 16).to_bytes(6, "big")

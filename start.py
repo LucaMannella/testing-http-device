@@ -5,6 +5,11 @@ from datetime import datetime
 import os
 import platform    # For getting the operating system name
 import subprocess  # For executing a shell command
+import socket
+import random
+
+from getmac import get_mac_address as gma
+from scapy.all import Ether, IP, UDP, BOOTP, DHCP, sendp
 
 import constants
 import util
@@ -52,6 +57,28 @@ def main():
         time.sleep(waiting_interval)
         execute_requests(addresses, args_dict[constants.TIME_AMONG_REQUESTS_KEY], args_dict[constants.DOWNLOAD_KEY])
 
+def expose_mud_url(mud_url, interface_name="eth0", verbose=True):
+    MAC = gma()
+    hostname = socket.gethostname()
+    device_IP = socket.gethostbyname(hostname)
+    LOG.debug("%s --- IP: %s --- MAC address: %s", hostname, device_IP, MAC)
+
+    LOG.debug("Trying to expose the MUD URL: %s", mud_url)
+    packet = (
+        Ether(dst="ff:ff:ff:ff:ff:ff") /
+        IP(src=device_IP, dst="255.255.255.255") /
+        UDP(sport=68, dport=67) /
+        BOOTP(
+            chaddr=util.mac_to_bytes(MAC),
+            xid=random.randint(1, 2**32-1),  # Random integer required by DHCP
+        ) /
+        # DHCP(options=[("message-type", "discover"), "end"])
+        DHCP(options=[("message-type", "discover"), ("mud-url", mud_url), "end"])
+    )
+    LOG.debug("Packet to send:\n %s", packet.__str__)
+    x = sendp(packet, iface=interface_name, verbose=verbose, return_packets=True)
+
+    LOG.debug("MUD URL Exposed!")
 
 def execute_requests(addresses, waiting_time, download=False):
     for address in addresses:
