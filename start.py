@@ -48,7 +48,7 @@ def main():
             interface = args_dict[constants.INTERFACE_TO_USE_KEY]
         else:
             interface = "wlan0"
-        LOG.debug("Interface <%s> used to expose MUD URL: ", interface, args_dict[constants.MUD_URL_KEY])
+        LOG.debug("Interface <%s> used to expose MUD URL: <%s>", interface, args_dict[constants.MUD_URL_KEY])
         expose_mud_url(args_dict[constants.MUD_URL_KEY], interface)
 
     # 4) Sending requests
