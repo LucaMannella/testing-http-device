@@ -44,11 +44,11 @@ def main():
 
     # 3 opt) if available exposing MUD URL
     if constants.MUD_URL_KEY in args_dict:
-        LOG.debug("MUD URL to expose: <%s>", args_dict[constants.MUD_URL_KEY])
         if constants.INTERFACE_TO_USE_KEY in args_dict:
             interface = args_dict[constants.INTERFACE_TO_USE_KEY]
         else:
             interface = "wlan0"
+        LOG.debug("Interface <%s> used to expose MUD URL: ", interface, args_dict[constants.MUD_URL_KEY])
         expose_mud_url(args_dict[constants.MUD_URL_KEY], interface)
 
     # 4) Sending requests
@@ -64,10 +64,9 @@ def main():
 def expose_mud_url(mud_url, interface_name="wlan0", verbose=True):
     MAC = gma()
     hostname = socket.gethostname()
-    device_IP = socket.gethostbyname(hostname)
+    device_IP = util.get_ip()
     LOG.debug("%s --- IP: %s --- MAC address: %s", hostname, device_IP, MAC)
 
-    LOG.debug("Trying to expose the MUD URL: %s", mud_url)
     packet = (
         Ether(dst="ff:ff:ff:ff:ff:ff") /
         IP(src=device_IP, dst="255.255.255.255") /
