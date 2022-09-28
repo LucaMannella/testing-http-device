@@ -1,6 +1,6 @@
 # Printed strings
-STARTUP_MESSAGE = "The application is starting"
-END_MESSAGE = "The application is ending"
+STARTUP_MESSAGE = "\nThis application will send several ICMP or HTTP requests.\n"
+END_MESSAGE = "\nAll the requests were executed.\n"
 
 # Default values
 DEFAULT_CONFIG = "config/config.json"
