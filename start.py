@@ -61,11 +61,16 @@ def main():
 
 def expose_mud_url(mud_url, interface_name="wlan0", verbose=True):
     MAC = gma()
+    byte_mac_addr=nu.mac_to_bytes(MAC)
+    x = bytearray(byte_mac_addr)
+    x.insert(0, 1)
+    x = bytes(x)
     hostname = socket.gethostname()
     device_IP = nu.get_ip()
     LOG.debug("%s --- IP: %s --- MAC address: %s", hostname, device_IP, MAC)
 
     dhcp_options = [("message-type", "discover")]
+    dhcp_options.append(("client_id", x))
     dhcp_options.append(("requested_addr", device_IP))
     dhcp_options.append(("hostname", hostname))
     dhcp_options.append(("mud-url", mud_url))
@@ -76,7 +81,7 @@ def expose_mud_url(mud_url, interface_name="wlan0", verbose=True):
         IP(src="0.0.0.0", dst="255.255.255.255") /
         UDP(sport=68, dport=67) /
         BOOTP(
-            chaddr=nu.mac_to_bytes(MAC),
+            chaddr=byte_mac_addr,
             xid=random.randint(1, 2**32-1),  # Random integer required by DHCP
         ) /
         dhcp_object
