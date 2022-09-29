@@ -65,6 +65,12 @@ def expose_mud_url(mud_url, interface_name="wlan0", verbose=True):
     device_IP = nu.get_ip()
     LOG.debug("%s --- IP: %s --- MAC address: %s", hostname, device_IP, MAC)
 
+    dhcp_options = [("message-type", "discover")]
+    dhcp_options.append(("requested_addr", device_IP))
+    dhcp_options.append(("hostname", hostname))
+    dhcp_options.append(("mud-url", mud_url))
+    dhcp_options.append("end")
+    dhcp_object = DHCP(options=dhcp_options)
     packet = (
         Ether(dst="ff:ff:ff:ff:ff:ff") /
         IP(src="0.0.0.0", dst="255.255.255.255") /
@@ -73,8 +79,7 @@ def expose_mud_url(mud_url, interface_name="wlan0", verbose=True):
             chaddr=nu.mac_to_bytes(MAC),
             xid=random.randint(1, 2**32-1),  # Random integer required by DHCP
         ) /
-        # DHCP(options=[("message-type", "discover"), "end"])
-        DHCP(options=[("message-type", "discover"), ("mud-url", mud_url), "end"])
+        dhcp_object
     )
     LOG.debug("Packet to send:\n %s", packet.__str__)
     x = sendp(packet, iface=interface_name, verbose=verbose, return_packets=True)
