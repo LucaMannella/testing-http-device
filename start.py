@@ -1,10 +1,7 @@
 import logging
 import signal
 import time
-from datetime import datetime
 import os
-import platform    # For getting the operating system name
-import subprocess  # For executing a shell command
 import socket
 import random
 
@@ -13,6 +10,7 @@ from scapy.all import Ether, IP, UDP, BOOTP, DHCP, sendp
 
 import constants
 import util
+import util_network as nu
 
 LOG = None
 
@@ -64,15 +62,15 @@ def main():
 def expose_mud_url(mud_url, interface_name="wlan0", verbose=True):
     MAC = gma()
     hostname = socket.gethostname()
-    device_IP = util.get_ip()
+    device_IP = nu.get_ip()
     LOG.debug("%s --- IP: %s --- MAC address: %s", hostname, device_IP, MAC)
 
     packet = (
         Ether(dst="ff:ff:ff:ff:ff:ff") /
-        IP(src=device_IP, dst="255.255.255.255") /
+        IP(src="0.0.0.0", dst="255.255.255.255") /
         UDP(sport=68, dport=67) /
         BOOTP(
-            chaddr=util.mac_to_bytes(MAC),
+            chaddr=nu.mac_to_bytes(MAC),
             xid=random.randint(1, 2**32-1),  # Random integer required by DHCP
         ) /
         # DHCP(options=[("message-type", "discover"), "end"])
@@ -85,41 +83,16 @@ def expose_mud_url(mud_url, interface_name="wlan0", verbose=True):
 
 def execute_requests(addresses, waiting_time, download=False):
     for address in addresses:
-        isOk = ping(address)
+        isOk = nu.ping(address)
         # LOG.info(f"The ping is: {isOk}")
         # if args_dict[constants.TRACEROUT_KEY]:
-        #    traceroute(address)
+        #    nu.traceroute(address)
         if download:
             filename = os.path.basename(address)
-            isOk = curl(address, filename)
+            isOk = nu.curl(address, filename)
             if isOk:
                 LOG.debug(f"File {filename} was succesfully downloaded")
         time.sleep(waiting_time)
-
-
-def ping(host):
-    """
-    Returns True if host (str) responds to a ping request.
-    Remember that a host may not respond to a ping (ICMP) request even if the host name is valid.
-    """
-
-    # Option for the number of packets as a function of
-    param = '-n' if platform.system().lower()=='windows' else '-c'
-
-    # Building the command. Ex: "ping -c 1 google.com"
-    command = ['ping', param, '1', host]
-
-    return subprocess.call(command) == 0
-    
-def traceroute(host):
-    param = '-m 3'  # number of hops
-    command = ['traceroute', param, host]
-    return subprocess.call(command) == 0
-
-def curl(host, filename):
-    param = '-o '+filename
-    command = ["curl", param, host]
-    return subprocess.call(command) == 0
 
 
 if __name__ == '__main__':

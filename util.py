@@ -1,9 +1,7 @@
-import socket
 import json
 import logging
 import sys
 import argparse
-from datetime import datetime
 from typing import Union
 
 import constants
@@ -64,19 +62,3 @@ def parse_config_file(app_name: str, description: str) -> dict:
     config_file = cmd_line.config
     args_dict = parse_json_file(config_file)
     return args_dict
-
-def get_ip():
-    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-    s.settimeout(0)
-    try:
-        s.connect(('8.8.8.8', 1)) # doesn't even have to be reachable
-        IP = s.getsockname()[0]
-    except Exception:
-        IP = '127.0.0.1'
-    finally:
-        s.close()
-    return IP
-
-def mac_to_bytes(mac_addr: str) -> bytes:
-    """ Converts a MAC address string to bytes. """
-    return int(mac_addr.replace(":", ""), 16).to_bytes(6, "big")
