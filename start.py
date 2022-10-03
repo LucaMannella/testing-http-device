@@ -69,7 +69,8 @@ def expose_mud_url(mud_url, interface_name="wlan0", verbose=True):
     device_IP = nu.get_ip()
     LOG.debug("%s --- IP: %s --- MAC address: %s", hostname, device_IP, MAC)
 
-    dhcp_options = [("message-type", "discover")]
+    # dhcp_options = [("message-type", "discover")]  ## Discover: The first message of a DHCP flow -> Can I have a DHCP address?
+    dhcp_options = [("message-type", "request")]  ## Request: The third message of a DHCP flow -> I would like to accept your offer
     dhcp_options.append(("client_id", x))
     dhcp_options.append(("requested_addr", device_IP))
     dhcp_options.append(("hostname", hostname))
