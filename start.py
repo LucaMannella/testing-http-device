@@ -49,15 +49,17 @@ def main():
         LOG.debug("Interface <%s> used to expose MUD URL: <%s>", interface, args_dict[constants.MUD_URL_KEY])
         expose_mud_url(args_dict[constants.MUD_URL_KEY], interface)
 
-    # 4) Sending requests
-    execute_requests(addresses, args_dict[constants.TIME_AMONG_REQUESTS_KEY], args_dict[constants.DOWNLOAD_KEY])
+    if constants.SEND_REQUESTS_KEY in args_dict:
+        if args_dict[constants.SEND_REQUESTS_KEY]:
+            # 4a) Sending requests
+            execute_requests(addresses, args_dict[constants.TIME_AMONG_REQUESTS_KEY], args_dict[constants.DOWNLOAD_KEY])
 
-    # Sending requests forever if required
-    waiting_interval = args_dict[constants.TIME_AMONG_BURSTS_KEY]
-    infinite_loop = args_dict[constants.INFINITE_REQUESTS_KEY]
-    while(infinite_loop):
-        time.sleep(waiting_interval)
-        execute_requests(addresses, args_dict[constants.TIME_AMONG_REQUESTS_KEY], args_dict[constants.DOWNLOAD_KEY])
+            # 4b) Sending requests forever if required
+            waiting_interval = args_dict[constants.TIME_AMONG_BURSTS_KEY]
+            infinite_loop = args_dict[constants.INFINITE_REQUESTS_KEY]
+            while(infinite_loop):
+                time.sleep(waiting_interval)
+                execute_requests(addresses, args_dict[constants.TIME_AMONG_REQUESTS_KEY], args_dict[constants.DOWNLOAD_KEY])
 
 def expose_mud_url(mud_url, interface_name="wlan0", verbose=True):
     MAC = gma()

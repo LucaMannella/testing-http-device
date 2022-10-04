@@ -16,6 +16,7 @@ DOWNLOAD_KEY = "download"
 INFINITE_REQUESTS_KEY = "infinite_requests"
 MUD_URL_KEY = "mud_url"
 INTERFACE_TO_USE_KEY = "interface_to_use"
+SEND_REQUESTS_KEY = "send_requests"
 
 # log
 DEFAULT_LOG_FORMATTER = "%(asctime)s.%(msecs)04d %(name)-7s %(levelname)s: %(message)s"
